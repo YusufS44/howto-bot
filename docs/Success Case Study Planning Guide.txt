@@ -1,0 +1,33 @@
+Guide to Planning a Success Case Study
+Introduction
+This guide is based on 'The Success Case Method' and outlines the essential steps and considerations for planning a Success Case Study (SCS). The Success Case Method is a structured approach to evaluating how well specific programs or initiatives are working, especially by examining the most and least successful cases.
+Key Steps in Planning a Success Case Study
+* 1. Clarify and define the purpose of the study.
+* 2. Review the information needs, interests, and concerns of key stakeholders.
+* 3. Define the program or initiative that is the object of the SC study.
+* 4. Identify the people in the program who are the focus of the SC study and clarify any necessary sampling requirements.
+* 5. Decide how long to wait after the innovation to search for success data.
+* 6. Specify the time frame for completion of the study.
+* 7. Clarify the key resources (funding and other) that are available for investment in the study.
+* 8. Create a design for the study that will accomplish its key purposes within the resources and other constraints you have identified.
+Clarify and Define the Purpose of the Study
+Understanding the purpose of the study helps shape the SC study design. This clarification might show that the SCM is not suitable for every purpose—especially if broad quantitative data is required. SCM focuses on a few key cases, not a representative sample, and is best for identifying what is working and why.
+When Not to Use the Success Case Method
+Avoid using SCM when you need to:
+* Know how the average participant feels or performs.
+* Gather opinions from all participants.
+* Determine how many people in total have used the program.
+* Find the average amount of participation or benefit.
+* Track usage trends and patterns over time.
+When the Success Case Method Is Effective
+* Estimating the ROI (Return on Investment) of a program.
+* Guiding revisions to improve a program.
+* Documenting benefits participants have experienced.
+* Deciding if a pilot program should be expanded.
+* Helping leaders decide on supporting a program.
+* Creating success examples for marketing or communications.
+* Refining or improving programs based on user experience.
+* Accelerating change by showcasing early adopter success.
+* Helping managers understand necessary success conditions.
+Stakeholder Considerations
+Stakeholders include anyone with a stake in the program: program sponsors, managers, participants, and users. Identifying and understanding stakeholder interests early is crucial. Overlooking stakeholders can result in resistance or attempts to discredit the study. Stakeholder concerns may impact study design, scope, and interpretation.

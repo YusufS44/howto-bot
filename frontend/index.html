@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>How-To Bot</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Arial,sans-serif;margin:0;background:#f6f7f9}
+    .wrap{max-width:900px;margin:40px auto;background:#fff;padding:24px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+    label{display:block;margin:12px 0 6px;font-weight:600}
+    input,textarea{width:100%;padding:10px;border:1px solid #dde3ea;border-radius:8px}
+    button{margin-top:12px;padding:10px 16px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-weight:700;cursor:pointer}
+    button + button{margin-left:8px}
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .row{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    iframe{width:100%;height:70vh;border:1px solid #dde3ea;border-radius:10px;background:#fff}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>How-To Guide Generator</h1>
+
+    <label for="q">Question</label>
+    <textarea id="q" rows="3" placeholder="How do I …?">How do I plan a success case study?</textarea>
+
+    <div class="row">
+      <div>
+        <label for="src">Source (optional, filename contains)</label>
+        <input id="src" placeholder="Success Case Study Planning Guide" />
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button id="go" class="btn">Generate</button>
+        <button id="download" class="btn" disabled>Download PDF</button>
+      </div>
+    </div>
+
+    <p><small>Tip: see available docs at <code>http://127.0.0.1:8000/docs</code></small></p>
+
+    <iframe id="preview" title="Preview"></iframe>
+  </div>
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // ===== CONFIG =====
+    const base = "http://127.0.0.1:8000"; // change to Cloud Run URL later
+
+    // ===== DOM =====
+    const go    = document.getElementById("go");
+    const dl    = document.getElementById("download");
+    const q     = document.getElementById("q");
+    const src   = document.getElementById("src");
+    const frame = document.getElementById("preview");
+
+    // Leave server HTML untouched; only add a <base> so /static/... resolves
+    function injectBaseOnly(html) {
+      return html.includes("<base ")
+        ? html
+        : html.replace("<head>", `<head><base href="${base}/">`);
+    }
+
+    // ===== Generate (HTML endpoint) =====
+    go?.addEventListener("click", async () => {
+      go.disabled = true; if (dl) dl.disabled = true;
+      const orig = go.textContent; go.textContent = "Generating…";
+      try {
+        const body = { question: q?.value || "", source: src?.value || null };
+        const res  = await fetch(`${base}/howto/html`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const fullHtml = await res.text();
+        frame.srcdoc   = injectBaseOnly(fullHtml);  // show server HTML exactly
+        frame.onload   = () => { if (dl) dl.disabled = false; };
+      } catch (e) {
+        alert("Generate failed: " + (e?.message || e));
+      } finally {
+        go.textContent = orig;
+        go.disabled = false;
+      }
+    });
+
+    // ===== Download PDF of exactly what's in the iframe =====
+    dl?.addEventListener("click", async () => {
+      dl.disabled = true;
+      const orig = dl.textContent; dl.textContent = "Preparing PDF…";
+      try {
+        const html = frame?.srcdoc || "";
+        if (!html) throw new Error("Nothing to export — generate the guide first.");
+
+        const res = await fetch(`${base}/html-to-pdf`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/pdf"
+          },
+          body: JSON.stringify({ html })
+        });
+        if (!res.ok) {
+          const t = await res.text();
+          throw new Error(`PDF failed (${res.status}): ${t.slice(0,120)}`);
+        }
+        const blob = await res.blob();
+        const url  = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "guide.pdf";  // server sets final name via headers
+        document.body.appendChild(a); a.click();
+        a.remove(); URL.revokeObjectURL(url);
+      } catch (e) {
+        alert(e.message || e);
+      } finally {
+        dl.textContent = orig;
+        dl.disabled = false;
+      }
+    });
+
+    // Optional: surface JS errors in the console
+    window.addEventListener("error", ev => console.warn("[frontend error]", ev.message));
+  });
+  </script>
+</body>
+</html>

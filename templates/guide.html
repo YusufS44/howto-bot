@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ title or 'How-To Guide' }}</title>
+  <style>
+    :root{
+      --bg:#f6f7f9;
+      --card:#ffffff;
+      --ink:#2c3e50;
+      --muted:#7f8c8d;
+      --accent:#3498db;
+      --border:#eaecee;
+      --dash:#cfd8e3;
+      --note:#fff8e6;
+      --warn:#ffebee;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}
+    .guide-container{max-width:1000px;margin:32px auto;background:var(--card);padding:40px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+    .guide-title{margin:0 0 8px;text-align:center;font-weight:800}
+    .guide-description{margin:0 auto 28px;text-align:left;color:var(--muted);font-size:1.05rem;padding-bottom:16px;border-bottom:2px solid var(--border);max-width:80ch}
+
+    /* STEP GRID: number | text | image */
+    .step{display:grid;grid-template-columns:72px minmax(0,1fr) 320px;gap:24px;align-items:start;margin:34px 0}
+    .step-number{
+      background:var(--accent);color:#fff;width:60px;height:60px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;font-size:1.35rem;font-weight:800;justify-self:center
+    }
+    .step-instruction h3{margin:0 0 8px}
+    .step-instruction p{margin:6px 0;line-height:1.55}
+
+    /* Image column stays in its lane */
+    .step-image{
+      justify-self:stretch;align-self:start;min-height:180px;
+      background:#f0f4f8;border:2px dashed var(--dash);border-radius:10px;
+      display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0
+    }
+    .step-image img{width:100%;height:auto;object-fit:contain;display:block}
+
+    /* Notes */
+    .special-note{background:var(--note);border-left:5px solid #ffc107;padding:18px;border-radius:6px;margin:26px 0}
+    .note-warning{background:var(--warn);border-left-color:#f44336}
+
+    /* Responsive stack */
+    @media (max-width: 900px){
+      .step{grid-template-columns:64px minmax(0,1fr) 260px}
+    }
+    @media (max-width: 768px){
+      .step{grid-template-columns:1fr}
+      .step-number{justify-self:start;margin-bottom:6px}
+      .step-image{order:3;width:100%}
+    }
+  </style>
+</head>
+<body>
+  <div class="guide-container">
+    <h1 class="guide-title">{{ title or 'How-To Guide' }}</h1>
+    <p class="guide-description">{{ description or '' }}</p>
+
+    {% for s in steps or [] %}
+    <div class="step">
+      <div class="step-number">{{ s.number or loop.index }}</div>
+
+      <div class="step-instruction">
+        <h3>{{ s.title or ('Step ' ~ loop.index) }}</h3>
+
+        {% if s.action %}
+          <p><strong>Action:</strong> {{ s.action }}</p>
+        {% endif %}
+        {% if s.why %}
+          <p><strong>Why:</strong> {{ s.why }}</p>
+        {% endif %}
+        {% if s.check %}
+          <p><strong>Check:</strong> {{ s.check }}</p>
+        {% endif %}
+        {% if s.image_error %}
+        <div style="color:#b00;margin-top:8px">Image error: {{ s.image_error }}</div>
+        {% endif %}
+
+      </div>
+
+      <div class="step-image">
+        <img
+          src="{{ s.get('image_url') or '/static/placeholder-step.png' }}"
+          alt="{{ s.get('illustration_caption') or s.get('title') or 'Step illustration' }}"
+          onerror="this.onerror=null; this.src='/static/placeholder-step.png';"
+        />
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if pro_tip %}
+    <div class="special-note"><strong>Pro Tip:</strong> {{ pro_tip }}</div>
+    {% endif %}
+
+    {% if troubleshooting %}
+    <div class="special-note note-warning">
+      <strong>Troubleshooting:</strong>
+      <ul>
+        {% for t in troubleshooting %}{% if t.issue and t.fix %}
+          <li><em>{{ t.issue }}</em> — {{ t.fix }}</li>
+        {% elif t %}
+          <li>{{ t }}</li>
+        {% endif %}{% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    {% if safety %}
+    <div class="special-note note-warning">
+      <strong>Safety/Notes:</strong>
+      <ul>{% for n in safety %}<li>{{ n }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+  </div>
+  <div id="guide-root" class="guide-wrap">
+    <h1>{{ title or "Job Aid" }}</h1>
+    <p>{{ description or "" }}</p>
+
+    {# Steps — sample structure that matches the CSS we injected #}
+    {% for s in steps %}
+      <section class="step">
+        <div class="text">
+          <h3 class="step-title"><span class="badge">{{ loop.index }}</span>{{ s.title }}</h3>
+          <div class="kv">
+            {% if s.action %}<p><b>Action:</b> {{ s.action }}</p>{% endif %}
+            {% if s.why %}<p><b>Why:</b> {{ s.why }}</p>{% endif %}
+            {% if s.check %}<p><b>Check:</b> {{ s.check }}</p>{% endif %}
+          </div>
+        </div>
+        <div class="illus">
+          {% if s.image_url %}<img src="{{ s.image_url }}" alt="{{ s.title|e }}">{% endif %}
+        </div>
+      </section>
+    {% endfor %}
+
+    {% if pro_tip %}
+      <div class="callout protip"><b>Pro Tip:</b> {{ pro_tip }}</div>
+    {% endif %}
+    {% if troubleshooting %}
+      <div class="callout troubleshoot">
+        <b>Troubleshooting:</b>
+        <ul>
+          {% for t in troubleshooting %}<li>{{ t }}</li>{% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
