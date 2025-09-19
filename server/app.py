@@ -44,3 +44,8 @@ templates = Jinja2Templates(directory=str(TEMPLATE_DIR))
 # --- Routes (include exactly once) ---
 from .routes import router as server_router
 app.include_router(server_router)
+
+# --- Add this section for Cloud Run compatibility ---
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))  # Default to 8080 if PORT not set
+    uvicorn.run(app, host="0.0.0.0", port=port)  # Must bind to 0.0.0.0
